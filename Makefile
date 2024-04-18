@@ -9,4 +9,4 @@ build:
                 -o ./target/snake_game
 
 run:
-        ./target/snake_game⏎
+        ./target/snake_game
