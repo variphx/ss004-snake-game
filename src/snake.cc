@@ -40,3 +40,21 @@ void Snake::move(const Direction direction) {
     break;
   }
 }
+
+void Snake::grow(const Coordination &old_tail) {
+  this->body.push_back(old_tail);
+  this->len += 1;
+}
+
+bool Snake::is_bite_self() const {
+  for (unsigned int i = 1; i < this->len; i += 1) {
+    if (this->body.front() == this->body[i]) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+const Coordination &Snake::get_head() const { return this->body.front(); }
+const Coordination &Snake::get_tail() const { return this->body.back(); }
