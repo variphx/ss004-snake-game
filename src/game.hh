@@ -1,28 +1,50 @@
-#if !defined(SNAKE_HH)
-#define SNAKE_HH
+#if !defined(GAME_HH)
+#define GAME_HH
 
-#include <vector>
+#include <cstdlib>
+#include <curses.h>
 
 #include "coordination.hh"
 #include "direction.hh"
+#include "snake.hh"
 
-class Snake {
+class Game {
 private:
-  std::vector<Coordination> body;
-  unsigned int len;
+  bool is_over;
+  Direction direction;
+  unsigned int width, height;
+  unsigned int score;
+  Coordination fruit;
+  unsigned int fruit_cycle_count;
+  Snake snake;
+
+private:
+  Coordination rand_coordination() const {
+    unsigned int x = rand() % this->width + 1;
+    unsigned int y = rand() % this->height + 1;
+    return Coordination(x, y);
+  }
+
+  int khbit() {
+    int ch = getch();
+    if (ch != ERR) {
+      ungetch(ch);
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
 public:
-  Snake();
-  ~Snake();
+  Game();
+  ~Game();
 
 public:
-  unsigned int get_len() const;
-  const std::vector<Coordination> &get_body() const;
-  void move(const Direction direction);
-  void grow(const Coordination &old_tail);
-  bool is_bite_self() const;
-  const Coordination &get_head() const;
-  const Coordination &get_tail() const;
+  bool get_is_over() const;
+  void draw() const;
+  void poll();
+  void execute();
+  unsigned int get_score() const;
 };
 
 #endif
