@@ -97,3 +97,84 @@ void Game::draw() const {
 
   refresh();
 }
+
+void Game::poll() {
+  if (khbit()) {
+    switch (getch()) {
+    case 'a':
+    case 'A':
+      if (this->direction != Direction::Right) {
+        this->direction = Direction::Left;
+      }
+      break;
+    case 'd':
+    case 'D':
+      if (this->direction != Direction::Left) {
+        this->direction = Direction::Right;
+      }
+      break;
+    case 'w':
+    case 'W':
+      if (this->direction != Direction::Down) {
+        this->direction = Direction::Up;
+      }
+      break;
+    case 's':
+    case 'S':
+      if (this->direction != Direction::Up) {
+        this->direction = Direction::Down;
+      }
+      break;
+    case 'X':
+      this->is_over = true;
+      break;
+    default:
+      break;
+    }
+  }
+}
+
+void Game::execute() {
+  const Coordination tail = this->snake.get_tail();
+  this->snake.move(this->direction);
+
+  if (this->snake.is_bite_self()) {
+    this->is_over = true;
+    return;
+  }
+
+  if (this->snake.get_head().get_x() == 0 ||
+      this->snake.get_head().get_x() == this->width + 1 ||
+      this->snake.get_head().get_y() == 0 ||
+      this->snake.get_head().get_y() == this->height + 1) {
+    this->is_over = true;
+    return;
+  }
+
+  if (this->snake.get_head() == this->fruit) {
+    if (this->fruit_cycle_count == 4) {
+      this->score += 3;
+      fruit_cycle_count = 0;
+    } else {
+      this->score += 1;
+      this->fruit_cycle_count += 1;
+    }
+
+    this->snake.grow(tail);
+
+    bool is_fruit_overlapped_snake = true;
+    while (is_fruit_overlapped_snake) {
+      is_fruit_overlapped_snake = false;
+      this->fruit = rand_coordination();
+
+      for (const auto &body_cell : this->snake.get_body()) {
+        if (this->fruit == body_cell) {
+          is_fruit_overlapped_snake = true;
+          break;
+        }
+      }
+    }
+  }
+}
+
+unsigned int Game::get_score() const { return this->score; }
